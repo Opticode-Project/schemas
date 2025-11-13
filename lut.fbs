@@ -1,12 +1,12 @@
 namespace lut;
 
-table Entry (key: key) {
-  key:uint;
+table Entry {
+  key:uint (key);
   value:[ubyte];
 }
 
 table DataMap {
-  entries:[Entry](key);
+  entries:[Entry];
 }
 
 root_type DataMap;
