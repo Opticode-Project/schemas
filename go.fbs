@@ -1,6 +1,5 @@
 namespace go;
 
-
 // Represents all compiler opcodes generated from node types in Opticode.
 enum Opcode : uint {
   // --- Declarations ---
@@ -11,7 +10,7 @@ enum Opcode : uint {
   ConstValue,         // <name> = <expr> | Type2
   Var,                // var <name> = <expr> | Type1
   VarValue,           // <name> = <expr> | Type2
-  Type,               // type <name> <type> | Type2
+  Type,               // type <name> <type> | Type1
   Func,               // func <name>(...) { ... } | Type1
 
   // --- Control Flow ---
@@ -98,6 +97,112 @@ enum Opcode : uint {
   Println             // println(...) | Type1
 }
 
+enum Kind : uint {
+  Nil = 0,          // AliasType
+  Int = 1,          // AliasType
+  Int8,             // AliasType
+  Int16,            // AliasType
+  Int32,            // AliasType
+  Int64,            // AliasType
+  Uint,             // AliasType
+  Uint8,            // AliasType
+  Uint16,           // AliasType
+  Uint32,           // AliasType
+  Uint64,           // AliasType
+  Uintptr,          // AliasType
+  Float32,          // AliasType
+  Float64,          // AliasType
+  Complex64,        // AliasType
+  Complex128,       // AliasType
+
+  String,           // AliasType
+  Rune,             // AliasType
+  Byte,             // AliasType
+
+  Boolean,          // AliasType
+
+  Pointer,          
+  Struct,
+  Func,
+  Array,
+  Slice,
+  Map,
+  Channel,
+  Interface
+}
+
+enum ChanDir : ubyte {
+  Bidirectional = 0,
+  Send = 1,
+  Receive = 2,
+}
+
+union Type {
+  PointerType,
+  InterfaceType,
+  StructType,
+  FuncType,
+  MapType,
+  ChanType
+}
+
+table Pair {
+  key: uint;
+  value: uint;
+}
+
+table StructField {
+  name: string;
+  type: uint;
+  tag: string;
+}
+
+table InterfaceMethod {
+  name: string;
+  func: Type;
+}
+
+table PointerType {
+  elem: Type;
+}
+
+table InterfaceType {
+  methods: [InterfaceMethod];
+}
+
+table StructType {
+  fields: [StructField];
+}
+
+table FuncType {
+  params: [Pair];
+  results: [Pair];
+  method: Pair;
+}
+
+table MapType {
+  key: TypeDef;
+  value: TypeDef;
+}
+
+table ChanType {
+  elem: TypeDef;
+  dir: ChanDir;
+}
+
+table ArrayType {
+  elem: TypeDef;
+  size: ulong;             // For multi dimensional arrays, integer is split 
+}
+
+table TypeDef {
+  base: uint;             // Kind enum or pointer to type
+  id: string;
+  type: Type;
+}
+
+
+// --- Flags --- 
 enum Flag : uint {
   None = 0,
   NodeType1 = 1,
@@ -110,6 +215,7 @@ enum ValueFlag : uint {
   Pointer = 1,
 }
 
+// --- Nodes ---
 table NodeValue {
   type:uint;
   value:long; // look up table for value
@@ -145,8 +251,21 @@ table Node {
   node:NodeUnion;      // actual node contents
 }
 
+// Used for lookup table
+table StringEntry {
+  key:uint(key);
+  value:string;
+}
+
+table TypeEntry {
+  key:uint(key);
+  value:TypeDef;
+}
+
 table Program {
   nodes:[Node]; // flat array of all nodes
+  lut:[StringEntry]; // String lookup table
+  types:[TypeEntry]; // Type registry
   name:string;
   schver:string; // Schema version
   wailsver:string; // Version of wails
