@@ -215,6 +215,10 @@ enum Flag : uint {
 enum ValueFlag : uint {
   None = 0,
   Pointer = 1,
+
+  FuncMeta = 2,
+  FuncParams = 4
+  FuncBody = 8,
 }
 
 // --- Nodes ---
