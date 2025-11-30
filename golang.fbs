@@ -207,9 +207,9 @@ table TypeDef {
 // --- Flags --- 
 enum Flag : uint {
   None = 0,
-  NodeType1 = 1,
-  NodeType2 = 2,
-  NodeType3 = 4,
+  NodeIndexed = 1,
+  NodeBinary = 2,
+  NodeUnary = 4,
 }
 
 enum ValueFlag : uint {
