@@ -144,7 +144,7 @@ union Type {
   StructType,
   FuncType,
   MapType,
-  ArrayType
+  ArrayType,
   ChanType
 }
 
