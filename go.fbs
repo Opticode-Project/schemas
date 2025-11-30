@@ -1,6 +1,6 @@
-namespace go;
+namespace golang;
 
-// Represents all compiler opcodes generated from node types in Opticode.
+// Represents all compiler opcodes generated from node types in Opticode
 enum Opcode : uint {
   // --- Declarations ---
   Package = 0,        // package <identifier> | Type1
@@ -97,6 +97,7 @@ enum Opcode : uint {
   Println             // println(...) | Type1
 }
 
+// --- Types ---
 enum Kind : uint {
   Nil = 0,          // AliasType
   Int = 1,          // AliasType
@@ -121,14 +122,14 @@ enum Kind : uint {
 
   Boolean,          // AliasType
 
-  Pointer,          
-  Struct,
-  Func,
-  Array,
-  Slice,
-  Map,
-  Channel,
-  Interface
+  Pointer,          // PointerType
+  Struct,           // StructType
+  Func,             // FuncType
+  Array,            // ArrayType
+  Slice,            // ArrayType
+  Map,              // MapType
+  Channel,          // ChanType
+  Interface         // InterfaceType
 }
 
 enum ChanDir : ubyte {
@@ -143,6 +144,7 @@ union Type {
   StructType,
   FuncType,
   MapType,
+  ArrayType
   ChanType
 }
 
@@ -192,7 +194,7 @@ table ChanType {
 
 table ArrayType {
   elem: TypeDef;
-  size: ulong;             // For multi dimensional arrays, integer is split 
+  size: ulong;            // For multi dimensional arrays, integer is split 
 }
 
 table TypeDef {
@@ -218,30 +220,30 @@ enum ValueFlag : uint {
 // --- Nodes ---
 table NodeValue {
   type:uint;
-  value:long; // look up table for value
+  value:long;         // look up table for value
   flags:ValueFlag;
 }
 
 union NodeUnion {
-  Type1, // If node contains array or requires id
-  Type2, // If node only requires 2 node values and no id
-  Type3, // If node only required 1 node value and no id
+  IndexedNode,        // If node contains array or requires id
+  BinaryNode,         // If node only requires 2 node values and no id
+  UnaryNode,          // If node only required 1 node value and no id
 }
 
-table Type1 {
+table IndexedNode {
   id:uint; // Should be an int to go into a reference table
   fields:[NodeValue];
 }
 
-table Type2 {
+table BinaryNode {
   left:NodeValue;
   right:NodeValue;
 }
 
-table Type3 {
+table UnaryNode {
   value:NodeValue; // Any flags stored outside of the node content
 }
- 
+
 table Node {
   id:long;             // unique node id
   opcode:Opcode;       // opcode of node
@@ -263,14 +265,14 @@ table TypeEntry {
 }
 
 table Program {
-  nodes:[Node]; // flat array of all nodes
-  lut:[StringEntry]; // String lookup table
-  types:[TypeEntry]; // Type registry
+  nodes:[Node];           // flat array of all nodes
+  lut:[StringEntry];      // String lookup table
+  types:[TypeEntry];      // Type registry
   name:string;
-  schver:string; // Schema version
-  wailsver:string; // Version of wails
-  version:string; // Version of the program
-  flags:uint; // I don't know what I would use this for yet
+  schver:string;          // Schema version
+  wailsver:string;        // Version of wails
+  version:string;         // Version of the program
+  flags:uint;             // I don't know what I would use this for yet
 }
 
 root_type Program;
