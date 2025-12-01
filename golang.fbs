@@ -15,8 +15,8 @@ enum Opcode : uint {
 
   // --- Control Flow ---
   If,                 // if <cond> { ... } | Type1
-  For,                // for <forRange> { ... } | Type1
-  ForRange,           // <init>; <cond>; <post> | Type1
+  For,                // <init>; <cond>; <post> | Type1
+  ForRange,           // for <forRange> { ... } | Type1
   Range,              // for <key>, <val> := range <expr> | Type1
   Switch,             // switch <expr> { ... } | Type1
   Select,             // select { ... } | Type1
@@ -210,6 +210,12 @@ enum Flag : uint {
   NodeIndexed = 1,
   NodeBinary = 2,
   NodeUnary = 4,
+
+  PlaceHolder1 = 8,
+  PlaceHolder2 = 16,
+  PlaceHolder4 = 32,
+  PlaceHolder5 = 64,
+  PlaceHolder6 = 128,
 }
 
 enum ValueFlag : uint {
@@ -217,8 +223,15 @@ enum ValueFlag : uint {
   Pointer = 1,
 
   FuncMeta = 2,
-  FuncParams = 4
+  FuncParams = 4,
   FuncBody = 8,
+  FuncResults = 16,
+
+  PlaceHolder1 = 32,
+  PlaceHolder2 = 64,
+  PlaceHolder4 = 128,
+  PlaceHolder5 = 256,
+  PlaceHolder6 = 512,
 }
 
 // --- Nodes ---
