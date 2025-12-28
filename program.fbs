@@ -1,0 +1,154 @@
+namespace program;
+
+// WARN - START OF REFACTOR SECTOR
+// This portion of types must be refactored to accomondate all supported languages
+// Currently this only represents the Go types model
+
+union Type {
+  PointerType,
+  InterfaceType,
+  StructType,
+  FuncType,
+  MapType,
+  ArrayType,
+  ChanType
+}
+
+table Pair {
+  key: uint;
+  value: uint;
+}
+
+table StructField {
+  name: string;
+  type: uint;
+  tag: string;
+}
+
+table InterfaceMethod {
+  name: string;
+  func: Type;
+}
+
+table PointerType {
+  elem: Type;
+}
+
+table InterfaceType {
+  methods: [InterfaceMethod];
+}
+
+table StructType {
+  fields: [StructField];
+}
+
+table FuncType {
+  params: [Pair];
+  results: [Pair];
+  method: Pair;
+}
+
+table MapType {
+  key: TypeDef;
+  value: TypeDef;
+}
+
+table ChanType {
+  elem: TypeDef;
+  dir: uint;
+}
+
+table ArrayType {
+  elem: TypeDef;
+  size: ulong;          // For multi dimensional arrays, integer is split
+}
+
+table TypeDef {
+  base: uint;           // Kind enum or pointer to type
+  id: string;
+  type: Type;
+}
+
+// WARN - END OF REFACTOR SECTOR
+
+enum ProgramFlag: uint {
+    // When a program buffer reaches it maximum size, it gets split into segments.
+    // Each bit flag represents the order of the current buffer.
+    // Thus, there can be only be up to four segments.
+    FirstSegment = 0,
+    SecondSegment = 1,
+    ThirdSegment = 2,
+    ForthSegment = 4,
+}
+
+// --- Flags ---
+enum Flag: uint {
+  None = 0,             // NOTE - Reserved
+  NodeIndexed = 1,      // NOTE - Reserved
+  NodeBinary = 2,       // NOTE - Reserved
+  NodeUnary = 4,        // NOTE - Reserved
+}
+
+enum ValueFlag: uint {
+  None = 0,             // NOTE - Reserved
+  Pointer = 1,          // NOTE - Reserved
+}
+
+// --- Nodes ---
+table NodeValue {
+  type: uint;
+  value: long;         // Look up for value
+  flags: uint;
+}
+
+union NodeUnion {
+  IndexedNode,        // If node contains array or requires id
+  BinaryNode,         // If node only requires 2 node values and no id
+  UnaryNode,          // If node only required 1 node value and no id
+}
+
+table IndexedNode {
+  id: uint;
+  fields: [NodeValue];
+}
+
+table BinaryNode {
+  left:NodeValue;
+  right:NodeValue;
+}
+
+table UnaryNode {
+  value:NodeValue;     // Any flags stored outside of the node content
+}
+
+table Node {
+  id: long;             // unique node id
+  opcode: uint;         // opcode of node
+  parent: long;         // parent node id
+  next: long;           // next sibling id
+  flags: uint;          // contains the node type and miscellanous flags
+  node: NodeUnion;      // actual node contents
+}
+
+table StringEntry {
+  key: uint(key);
+  value: string;
+}
+
+table TypeEntry {
+  key: uint(key);
+  value: TypeDef;
+}
+
+table App {
+  nodes: [Node];           // flat array of all nodes
+  lut: [StringEntry];      // String lookup table
+  types: [TypeEntry];      // Type registry
+  name: string;
+  schver: string;          // Schema version
+  wailsver: string;        // Version of wails
+  version: string;         // Version of the program
+  flags: ProgramFlag;             // I don't know what I would use this for yet
+}
+
+root_type App;

@@ -1,6 +1,5 @@
 namespace golang;
 
-// Represents all compiler opcodes generated from node types in Opticode
 enum Opcode : uint {
   // --- Declarations ---
   Package = 0,        // package <identifier> | Type1
@@ -97,7 +96,7 @@ enum Opcode : uint {
   Println             // println(...) | Type1
 }
 
-// --- Types ---
+// --- Go Types ---
 enum Kind : uint {
   Nil = 0,          // AliasType
   Int = 1,          // AliasType
@@ -138,78 +137,12 @@ enum ChanDir : ubyte {
   Receive = 2,
 }
 
-union Type {
-  PointerType,
-  InterfaceType,
-  StructType,
-  FuncType,
-  MapType,
-  ArrayType,
-  ChanType
-}
-
-table Pair {
-  key: uint;
-  value: uint;
-}
-
-table StructField {
-  name: string;
-  type: uint;
-  tag: string;
-}
-
-table InterfaceMethod {
-  name: string;
-  func: Type;
-}
-
-table PointerType {
-  elem: Type;
-}
-
-table InterfaceType {
-  methods: [InterfaceMethod];
-}
-
-table StructType {
-  fields: [StructField];
-}
-
-table FuncType {
-  params: [Pair];
-  results: [Pair];
-  method: Pair;
-}
-
-table MapType {
-  key: TypeDef;
-  value: TypeDef;
-}
-
-table ChanType {
-  elem: TypeDef;
-  dir: ChanDir;
-}
-
-table ArrayType {
-  elem: TypeDef;
-  size: ulong;            // For multi dimensional arrays, integer is split 
-}
-
-table TypeDef {
-  base: uint;             // Kind enum or pointer to type
-  id: string;
-  type: Type;
-}
-
-
-// --- Flags --- 
-enum Flag : uint {
-  None = 0,
-  NodeIndexed = 1,
-  NodeBinary = 2,
-  NodeUnary = 4,
+// --- Flags ---
+enum NodeFlag : uint {
+  None = 0,             // NOTE - Reserved
+  NodeIndexed = 1,      // NOTE - Reserved
+  NodeBinary = 2,       // NOTE - Reserved
+  NodeUnary = 4,        // NOTE - Reserved
 
   PlaceHolder1 = 8,
   PlaceHolder2 = 16,
@@ -219,8 +152,8 @@ enum Flag : uint {
 }
 
 enum ValueFlag : uint {
-  None = 0,
-  Pointer = 1,
+  None = 0,             // NOTE - Reserved
+  Pointer = 1,          // NOTE - Reserved
 
   FuncMeta = 2,
   FuncParams = 4,
@@ -232,63 +165,3 @@ enum ValueFlag : uint {
   PlaceHolder4 = 128,
   PlaceHolder5 = 256,
 }
-
-// --- Nodes ---
-table NodeValue {
-  type:uint;
-  value:long;         // look up table for value
-  flags:ValueFlag;
-}
-
-union NodeUnion {
-  IndexedNode,        // If node contains array or requires id
-  BinaryNode,         // If node only requires 2 node values and no id
-  UnaryNode,          // If node only required 1 node value and no id
-}
-
-table IndexedNode {
-  id:uint; // Should be an int to go into a reference table
-  fields:[NodeValue];
-}
-
-table BinaryNode {
-  left:NodeValue;
-  right:NodeValue;
-}
-
-table UnaryNode {
-  value:NodeValue; // Any flags stored outside of the node content
-}
-
-table Node {
-  id:long;             // unique node id
-  opcode:Opcode;       // opcode of node
-  parent:long;         // parent node id
-  next:long;           // next sibling id
-  flags:Flag;          // contains the node type and miscellanous flags     
-  node:NodeUnion;      // actual node contents
-}
-
-// Used for lookup table
-table StringEntry {
-  key:uint(key);
-  value:string;
-}
-
-table TypeEntry {
-  key:uint(key);
-  value:TypeDef;
-}
-
-table Program {
-  nodes:[Node];           // flat array of all nodes
-  lut:[StringEntry];      // String lookup table
-  types:[TypeEntry];      // Type registry
-  name:string;
-  schver:string;          // Schema version
-  wailsver:string;        // Version of wails
-  version:string;         // Version of the program
-  flags:uint;             // I don't know what I would use this for yet
-}
-
-root_type Program;
