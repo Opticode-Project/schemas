@@ -22,7 +22,7 @@ table Pair {
 table StructField {
   name: string;
   type: uint;
-  tag: string;
+  misc: string;
 }
 
 table InterfaceMethod {
@@ -64,9 +64,10 @@ table ArrayType {
 }
 
 table TypeDef {
-  base: uint;           // Kind enum or pointer to type
+  base: uint;           // Kind enum or pointer address of type
   id: string;
   type: Type;
+  flags: uint;
 }
 
 // WARN - END OF REFACTOR SECTOR
@@ -74,7 +75,7 @@ table TypeDef {
 enum ProgramFlag: uint {
     // When a program buffer reaches it maximum size, it gets split into segments.
     // Each bit flag represents the order of the current buffer.
-    // Thus, there can be only be up to four segments.
+    // Therefore, there can be only be up to four segments.
     FirstSegment = 0,
     SecondSegment = 1,
     ThirdSegment = 2,
@@ -141,14 +142,14 @@ table TypeEntry {
 }
 
 table App {
-  nodes: [Node];           // flat array of all nodes
+  nodes: [Node];           // Flat array of all nodes
   lut: [StringEntry];      // String lookup table
   types: [TypeEntry];      // Type registry
   name: string;
   schver: string;          // Schema version
   wailsver: string;        // Version of wails
   version: string;         // Version of the program
-  flags: ProgramFlag;             // I don't know what I would use this for yet
+  flags: ProgramFlag;      // I don't know what I would use this for yet
 }
 
 root_type App;

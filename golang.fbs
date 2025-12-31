@@ -2,98 +2,97 @@ namespace golang;
 
 enum Opcode : uint {
   // --- Declarations ---
-  Package = 0,        // package <identifier> | Type1
-  Import = 1,         // import "<path>" | Type1
-  ImportValue,        // <name> "<url>"   | Type2
-  Const,              // const <name> = <expr> | Type1
-  ConstValue,         // <name> = <expr> | Type2
-  Var,                // var <name> = <expr> | Type1
-  VarValue,           // <name> = <expr> | Type2
-  Type,               // type <name> <type> | Type1
-  Func,               // func <name>(...) { ... } | Type1
+  Package = 0,        // package <identifier> | IndexedNode
+  Import = 1,         // import "<path>" | IndexedNode
+  ImportValue,        // <name> "<url>"   | BinaryNode
+  Const,              // const <name> = <expr> | IndexedNode
+  ConstValue,         // <name> = <expr> | BinaryNode
+  Var,                // var <name> = <expr> | IndexedNode
+  VarValue,           // <name> = <expr> | BinaryNode
+  Type,               // type <name> <type> | IndexedNode
+  Func,               // func <name>(...) { ... } | IndexedNode
 
   // --- Control Flow ---
-  If,                 // if <cond> { ... } | Type1
-  For,                // <init>; <cond>; <post> | Type1
-  ForRange,           // for <forRange> { ... } | Type1
-  Range,              // for <key>, <val> := range <expr> | Type1
-  Switch,             // switch <expr> { ... } | Type1
-  Select,             // select { ... } | Type1
-  Case,               // case <expr>: <...> | Type1
-  Default,            // default: <...> | Type1
+  If,                 // if <cond> { ... } | IndexedNode
+  For,                // <init>; <cond>; <post> | IndexedNode
+  ForRange,           // for <forRange> { ... } | IndexedNode
+  Switch,             // switch <expr> { ... } | IndexedNode
+  Select,             // select { ... } | IndexedNode
+  Case,               // case <expr>: <...> | IndexedNode
+  Default,            // default: <...> | IndexedNode
 
   // --- Operators ---
-  Add,                // <a> + <b> | Type2
-  Sub,                // <a> - <b> | Type2
-  Mul,                // <a> * <b> | Type2
-  Div,                // <a> / <b> | Type2
-  Mod,                // <a> % <b> | Type2
-  Inc,                // <a>++ | Type3
-  Dec,                // <a>-- | Type3
-  Assign,             // <a> = <b> | Type2
-  AddAssign,          // <a> += <b> | Type2
-  SubAssign,          // <a> -= <b> | Type2
-  MulAssign,          // <a> *= <b> | Type2
-  DivAssign,          // <a> += <b> | Type2
-  ModAssign,          // <a> %= <b> | Type2
-  BitAndAssign,       // <a> &= <b> | Type2
-  BitOrAssign,        // <a> |= <b> | Type2
-  BitXorAssign,       // <a> ^= <b> | Type2
-  BitClearAssign,     // <a> &^= <b> | Type2
-  LeftShiftAssign,    // <a> <<= <b> | Type2
-  RightShiftAssign,   // <a> >>= <b> | Type2
-  Equal,              // <a> == <b> | Type2
-  NotEqual,           // <a> != <b> | Type2
-  Less,               // <a> < <b> | Type2
-  LessEqual,          // <a> <= <b> | Type2
-  Greater,            // <a> > <b> | Type2
-  GreaterEqual,       // <a> >= <b> | Type2
-  And,                // <a> && <b> | Type2
-  Or,                 // <a> || <b> | Type2
-  Not,                // !<a> | Type3
-  BitAnd,             // <a> & <b> | Type2
-  BitOr,              // <a> | <b> | Type2
-  BitXor,             // <a> ^ <b> | Type2
-  BitClear,           // <a> ^& <b> | Type2
-  LeftShift,          // <a> << <b> | Type2
-  RightShift,         // <a> >> <b> | Type2
+  Add,                // <a> + <b> | BinaryNode
+  Sub,                // <a> - <b> | BinaryNode
+  Mul,                // <a> * <b> | BinaryNode
+  Div,                // <a> / <b> | BinaryNode
+  Mod,                // <a> % <b> | BinaryNode
+  Inc,                // <a>++ | UnaryNode
+  Dec,                // <a>-- | UnaryNode
+  Assign,             // <a> = <b> | BinaryNode
+  AddAssign,          // <a> += <b> | BinaryNode
+  SubAssign,          // <a> -= <b> | BinaryNode
+  MulAssign,          // <a> *= <b> | BinaryNode
+  DivAssign,          // <a> += <b> | BinaryNode
+  ModAssign,          // <a> %= <b> | BinaryNode
+  BitAndAssign,       // <a> &= <b> | BinaryNode
+  BitOrAssign,        // <a> |= <b> | BinaryNode
+  BitXorAssign,       // <a> ^= <b> | BinaryNode
+  BitClearAssign,     // <a> &^= <b> | BinaryNode
+  LeftShiftAssign,    // <a> <<= <b> | BinaryNode
+  RightShiftAssign,   // <a> >>= <b> | BinaryNode
+  Equal,              // <a> == <b> | BinaryNode
+  NotEqual,           // <a> != <b> | BinaryNode
+  Less,               // <a> < <b> | BinaryNode
+  LessEqual,          // <a> <= <b> | BinaryNode
+  Greater,            // <a> > <b> | BinaryNode
+  GreaterEqual,       // <a> >= <b> | BinaryNode
+  And,                // <a> && <b> | BinaryNode
+  Or,                 // <a> || <b> | BinaryNode
+  Not,                // !<a> | UnaryNode
+  BitAnd,             // <a> & <b> | BinaryNode
+  BitOr,              // <a> | <b> | BinaryNode
+  BitXor,             // <a> ^ <b> | BinaryNode
+  BitClear,           // <a> ^& <b> | BinaryNode
+  LeftShift,          // <a> << <b> | BinaryNode
+  RightShift,         // <a> >> <b> | BinaryNode
 
   // --- Channels ---
-  Send,               // ch <- val | Type2
-  Receive,            // <-ch | Type3
+  Send,               // ch <- val | BinaryNode
+  Receive,            // <-ch | UnaryNode
 
   // --- Pointers & References ---
-  AddrOf,             // &var | Type3
-  Deref,              // *ptr | Type3
+  AddrOf,             // &var | UnaryNode
+  Deref,              // *ptr | UnaryNode
 
   // --- Functions & Calls ---
-  Call,               // func(...) | Type1
-  Return,             // return <expr> | Type3
-  Defer,              // defer <call> | Type3
-  GoRoutine,          // go <call> | Type3
+  Call,               // func(...) | IndexedNode
+  Return,             // return <expr> | IndexedNode
+  Defer,              // defer <call> | UnaryNode
+  GoRoutine,          // go <call> | UnaryNode
 
   // --- Composite Types ---
-  Map,                // map[keyType]valType{...} | Type1
-  Array,              // [n]type{...} | Type1
-  Chan,               // chan type | Type3
+  Map,                // map[keyType]valType{...} | IndexedNode
+  Array,              // [n]type{...} | IndexedNode
+  Chan,               // chan type | UnaryNode
 
   // --- Error Handling ---
-  Panic,              // panic(<expr>) | Type3
+  Panic,              // panic(<expr>) | UnaryNode
   Recover,            // recover() | NONE
 
   // --- Built-in & Special ---
-  Make,               // make(...) | Type1
-  New,                // new(type) | Type3
-  Len,                // len(...) | Type1
-  Cap,                // cap(...) | Type1
-  Append,             // append(...) | Type1
-  Copy,               // copy(dst, src) | Type2
-  Close,              // close(ch) | Type3
-  Complex,            // complex(...) | Type1
-  Real,               // real(...) | Type1
-  Imag,               // imag(...) | Type1
-  Print,              // print(...) | Type1
-  Println             // println(...) | Type1
+  Make,               // make(...) | IndexedNode
+  New,                // new(type) | UnaryNode
+  Len,                // len(...) | UnaryNode
+  Cap,                // cap(...) | UnaryNode
+  Append,             // append(...) | IndexedNode
+  Copy,               // copy(dst, src) | BinaryNode
+  Close,              // close(ch) | UnaryNode
+  Complex,            // complex(...) | BinaryNode
+  Real,               // real(...) | UnaryNode
+  Imag,               // imag(...) | UnaryNode
+  Print,              // print(...) | IndexedNode
+  Println             // println(...) | IndexedNode
 }
 
 // --- Go Types ---
@@ -152,16 +151,32 @@ enum NodeFlag : uint {
 }
 
 enum ValueFlag : uint {
-  None = 0,             // NOTE - Reserved
-  Pointer = 1,          // NOTE - Reserved
+  None           = 0x0,      // NOTE - Reserved
+  Pointer        = 0x1,      // NOTE - Reserved
+  Quotation      = 0x2,
 
-  FuncMeta = 2,
-  FuncParams = 4,
-  FuncBody = 8,
+  IfConditon     = 0x4,
+  IfBody         = 0x8,
+  IfElse         = 0x10,
 
-  PlaceHolder6 = 16,
-  PlaceHolder1 = 32,
-  PlaceHolder2 = 64,
-  PlaceHolder4 = 128,
-  PlaceHolder5 = 256,
+  FuncMeta       = 0x20,
+  FuncParam      = 0x40,
+  FuncBody       = 0x80,
+
+  SwitchExp      = 0x100,
+  SwitchBody     = 0x200,
+
+  CaseExp        = 0x400,
+  CaseBody       = 0x800,
+
+  ForInit        = 0x1000,
+  ForCondition   = 0x2000,
+  ForPost        = 0x4000,
+  ForBody        = 0x8000,
+
+  ForRangeVar1   = 0x10000,
+  ForRangeVar2   = 0x20000,
+  ForRangeValue  = 0x40000,
+
+  DefaultBody    = 0x80000,
 }
