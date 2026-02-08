@@ -1,17 +1,16 @@
 namespace program;
 
 // WARN - START OF REFACTOR SECTOR
-// This portion of types must be refactored to accomondate all supported languages
+// This portion of types must be refactored to accommodate all supported languages
 // Currently this only represents the Go types model
 
 union Type {
   PointerType,
-  InterfaceType,
-  StructType,
-  FuncType,
+  StructureType,
+  FunctionType,
   MapType,
   ArrayType,
-  ChanType
+  TupleType
 }
 
 table Pair {
@@ -19,58 +18,123 @@ table Pair {
   value: uint;
 }
 
-table StructField {
-  name: string;
-  type: uint;
-  misc: string;
-}
-
-table InterfaceMethod {
-  name: string;
-  func: Type;
+table StructureField {
+  name: uint;                // String Pointer
+  type: uint;                // Type Definition
+  misc: uint;                // String Pointer
 }
 
 table PointerType {
-  elem: Type;
+  elem: uint;                // Type Definition
 }
 
-table InterfaceType {
-  methods: [InterfaceMethod];
+table TupleType {
+  elem: [uint];              // Type Definition
 }
 
-table StructType {
-  fields: [StructField];
+// This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string:
+// TS (interface/class)
+// Go (struct/interface)
+// C (struct)
+// C++ (struct/class)
+// C# (dict)
+// Lua (dict)
+// Pascal (record)
+// PHP (class)
+// Dart (class)
+// GLSL (struct)
+// Haskell (data)
+// Kotlin (class)
+// MATLAB (struct)
+// MOJO (struct)
+// SQL (table)
+// Zig (struct)
+// Python (class)
+// Rust (struct)
+table StructureType {
+  fields: [StructureField];
+  defs: [uint];          // Array of Type Definitions
 }
 
-table FuncType {
+// This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string:
+// Go
+// TS
+// C (Heavy on flags)
+// C++ (Heavy on flags)
+// C# (Heavy on flags)
+// Lua
+// Pascal
+// PHP
+// Dart
+// GLSL
+// Haskell
+// Kotlin
+// MATLAB
+// MOJO
+// SQL
+// Zig
+// Python
+// Rust
+table FunctionType {
   params: [Pair];
   results: [Pair];
-  method: Pair;
+  impl: Pair;
+  type_sig: uint;
 }
 
+// This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string
+// Go
+// TS
+// C (No native map type)
+// C++ (Standard library)
+// C# (Dictionary)
+// Lua
+// Pascal
+// PHP
+// Dart
+// GLSL
+// Haskell
+// Kotlin
+// MATLAB
+// MOJO (Dict)
+// SQL
+// Zig
+// Python
+// Rust
 table MapType {
-  key: TypeDef;
-  value: TypeDef;
+  key: uint;            // Type Definition
+  value: uint;          // Type Definition
 }
 
-table ChanType {
-  elem: TypeDef;
-  dir: uint;
-}
-
+// This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string
+// Go
+// TS (Heavy on flags)
+// C (Heavy on flags)
+// C++ (Heavy on flags)
+// C# (Heavy on flags)
+// Lua (maybe)
+// Pascal (maybe not indexed arrays)
+// PHP (maybe)
+// Dart
+// GLSL
+// Haskell (needs pointers for desugars to a linked list)
+// Kotlin
+// MATLAB (maybe)
+// SQL
+// Zig
+// Python
+// Rust
 table ArrayType {
-  elem: TypeDef;
+  elem: uint;           // Type Definition
   size: ulong;          // For multi dimensional arrays, integer is split
 }
 
 table TypeDef {
   base: uint;           // Kind enum or pointer address of type
-  id: string;
+  id: uint;
   type: Type;
   flags: uint;
 }
-
-// WARN - END OF REFACTOR SECTOR
 
 enum ProgramFlag: uint {
     // When a program buffer reaches it maximum size, it gets split into segments.
@@ -149,7 +213,7 @@ table App {
   schver: string;          // Schema version
   wailsver: string;        // Version of wails
   version: string;         // Version of the program
-  flags: ProgramFlag;      // I don't know what I would use this for yet
+  flags: ProgramFlag;      // Program flags
 }
 
 root_type App;
