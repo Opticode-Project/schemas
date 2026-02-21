@@ -1,9 +1,5 @@
 namespace program;
 
-// WARN - START OF REFACTOR SECTOR
-// This portion of types must be refactored to accommodate all supported languages
-// Currently this only represents the Go types model
-
 union Type {
   PointerType,
   StructureType,
@@ -19,27 +15,27 @@ table Pair {
 }
 
 table StructureField {
-  name: uint;                // String Pointer
-  type: uint;                // Type Definition
-  misc: uint;                // String Pointer
+  name: uint;                //
+  type: uint;                //
+  misc: uint;                //
 }
 
 table PointerType {
-  elem: uint;                // Type Definition
+  elem: uint;                //
 }
 
 table TupleType {
-  elem: [uint];              // Type Definition
+  elem: [uint];              //
 }
 
 // This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string:
-// TS (interface/class)
+// TS (interface/class/enum?)
 // Go (struct/interface)
-// C (struct)
-// C++ (struct/class)
-// C# (dict)
-// Lua (dict)
-// Pascal (record)
+// C (struct/enum/union)
+// C++ (struct/class/union/enum?)
+// C# (struct/class/record/interface/enum?)
+// Lua (table)
+// Pascal (record/set/array/enum?)
 // PHP (class)
 // Dart (class)
 // GLSL (struct)
@@ -57,12 +53,12 @@ table StructureType {
 }
 
 // This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string:
-// Go
-// TS
-// C (Heavy on flags)
-// C++ (Heavy on flags)
-// C# (Heavy on flags)
-// Lua
+// Go (func)
+// TS (function)
+// C (function)
+// C++ (function)
+// C# (function/delegate)
+// Lua (function)
 // Pascal
 // PHP
 // Dart
@@ -83,13 +79,13 @@ table FunctionType {
 }
 
 // This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string
-// Go
-// TS
+// Go (map)
+// TS (Map)
 // C (No native map type)
 // C++ (Standard library)
 // C# (Dictionary)
-// Lua
-// Pascal
+// Lua (table)
+// Pascal (No native map type)
 // PHP
 // Dart
 // GLSL
@@ -107,12 +103,12 @@ table MapType {
 }
 
 // This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string
-// Go
-// TS (Heavy on flags)
-// C (Heavy on flags)
+// Go (array/slice)
+// TS (array)
+// C (array)
 // C++ (Heavy on flags)
 // C# (Heavy on flags)
-// Lua (maybe)
+// Lua (table)
 // Pascal (maybe not indexed arrays)
 // PHP (maybe)
 // Dart
