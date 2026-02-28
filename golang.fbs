@@ -1,6 +1,8 @@
 namespace golang;
 
-enum Opcode : uint {
+attribute "testing";
+
+enum Opcode : uint32 {
   // --- Declarations ---
   Package = 0,        // package <identifier> | IndexedNode
   Import = 1,         // import "<path>" | IndexedNode
@@ -75,6 +77,7 @@ enum Opcode : uint {
   Map,                // map[keyType]valType{...} | IndexedNode
   Array,              // [n]type{...} | IndexedNode
   Chan,               // chan type | UnaryNode
+  Constructor,         // []int{1, 2, 3} | IndexedNode
 
   // --- Error Handling ---
   Panic,              // panic(<expr>) | UnaryNode
@@ -96,48 +99,41 @@ enum Opcode : uint {
 }
 
 // --- Go Types ---
-enum Kind : uint {
-  Nil = 0,          // AliasType
-  Int = 1,          // AliasType
-  Int8,             // AliasType
-  Int16,            // AliasType
-  Int32,            // AliasType
-  Int64,            // AliasType
-  Uint,             // AliasType
-  Uint8,            // AliasType
-  Uint16,           // AliasType
-  Uint32,           // AliasType
-  Uint64,           // AliasType
-  Uintptr,          // AliasType
-  Float32,          // AliasType
-  Float64,          // AliasType
-  Complex64,        // AliasType
-  Complex128,       // AliasType
+enum Kind : uint32 {
+  Nil = 0,          //
+  Int = 1,          //
+  Int8,             //
+  Int16,            //
+  Int32,            //
+  Int64,            //
+  Uint8,            //
+  Uint16,           //
+  Uint32,           //
+  Uint64,           //
+  Uintptr,          //
+  Float32,          //
+  Float64,          //
+  Complex64,        //
+  Complex128,       //
 
-  String,           // AliasType
-  Rune,             // AliasType
-  Byte,             // AliasType
+  String,           //
+  Rune,             //
+  Byte,             //
 
-  Boolean,          // AliasType
+  Boolean,          //
 
-  Pointer,          // PointerType
-  Struct,           // StructType
-  Func,             // FuncType
-  Array,            // ArrayType
-  Slice,            // ArrayType
-  Map,              // MapType
-  Channel,          // ChanType
-  Interface         // InterfaceType
-}
-
-enum ChanDir : ubyte {
-  Bidirectional = 0,
-  Send = 1,
-  Receive = 2,
+  Pointer,          //
+  Struct,           //
+  Func,             //
+  Array,            //
+  Slice,            //
+  Map,              //
+  Channel,          //
+  Interface         //
 }
 
 // --- Flags ---
-enum NodeFlag : uint {
+enum NodeFlag : uint32 {
   None = 0,             // NOTE - Reserved
   NodeIndexed = 1,      // NOTE - Reserved
   NodeBinary = 2,       // NOTE - Reserved
@@ -150,33 +146,66 @@ enum NodeFlag : uint {
   PlaceHolder6 = 128,
 }
 
-enum ValueFlag : uint {
-  None           = 0x0,      // NOTE - Reserved
-  Pointer        = 0x1,      // NOTE - Reserved
-  Quotation      = 0x2,
+enum ValueFlag : uint32(bit_flags) {
+  None,         // NOTE - Reserved
+  Pointer,      // NOTE - Reserved
+  Quotation,
+  IfConditon,
+  IfBody,
+  IfElse,
 
-  IfConditon     = 0x4,
-  IfBody         = 0x8,
-  IfElse         = 0x10,
+  FuncMeta,
+  FuncParam,
+  FuncBody,
 
-  FuncMeta       = 0x20,
-  FuncParam      = 0x40,
-  FuncBody       = 0x80,
+  SwitchExp,
+  SwitchBody,
 
-  SwitchExp      = 0x100,
-  SwitchBody     = 0x200,
+  CaseExp,
+  CaseBody,
 
-  CaseExp        = 0x400,
-  CaseBody       = 0x800,
+  ForInit,
+  ForCondition,
+  ForPost,
+  ForBody,
 
-  ForInit        = 0x1000,
-  ForCondition   = 0x2000,
-  ForPost        = 0x4000,
-  ForBody        = 0x8000,
+  ForRangeVar1,
+  ForRangeVar2,
+  ForRangeValue,
 
-  ForRangeVar1   = 0x10000,
-  ForRangeVar2   = 0x20000,
-  ForRangeValue  = 0x40000,
+  DefaultBody,
+}
 
-  DefaultBody    = 0x80000,
+table StructField {
+  name: uint32;         // String address
+  type: uint32;         // TypeDef address
+  misc: uint32;         // String address
+}
+
+table GoType {
+  // Pointer
+  elem: uint32(testing);         // TypeDef address
+
+  // Interface
+  methods: [uint64];    // Array of TypeDef & String addresses
+                        // 0-32bits = TypeDef address
+                        // 32-64bits = String address
+
+  // Struct
+  fields: [StructField];
+
+  // Func
+  params: [uint64];
+  results: [uint64];
+  method: uint64;
+
+  // Map
+  key: uint32;          // TypeDef address
+  value: uint32;        // TypeDef address
+
+  // Channel
+  dir: uint32;
+
+  // Array
+  size: ulong;          // For multi dimensional arrays, integer is split
 }
