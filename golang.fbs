@@ -1,6 +1,6 @@
-namespace golang;
+include "program.fbs";
 
-attribute "testing";
+namespace golang;
 
 enum Opcode : uint32 {
   // --- Declarations ---
@@ -77,7 +77,7 @@ enum Opcode : uint32 {
   Map,                // map[keyType]valType{...} | IndexedNode
   Array,              // [n]type{...} | IndexedNode
   Chan,               // chan type | UnaryNode
-  Constructor,         // []int{1, 2, 3} | IndexedNode
+  Constructor,        // []int{1, 2, 3} | IndexedNode
 
   // --- Error Handling ---
   Panic,              // panic(<expr>) | UnaryNode
@@ -100,50 +100,44 @@ enum Opcode : uint32 {
 
 // --- Go Types ---
 enum Kind : uint32 {
-  Nil = 0,          //
-  Int = 1,          //
-  Int8,             //
-  Int16,            //
-  Int32,            //
-  Int64,            //
-  Uint8,            //
-  Uint16,           //
-  Uint32,           //
-  Uint64,           //
-  Uintptr,          //
-  Float32,          //
-  Float64,          //
-  Complex64,        //
-  Complex128,       //
+  nil = 0,          //
+  int = 1,          //
+  int8,             //
+  int16,            //
+  int32,            //
+  int64,            //
+  uint8,            //
+  uint16,           //
+  uint32,           //
+  uint64,           //
+  uintptr,          //
+  float32,          //
+  float64,          //
+  complex64,        //
+  complex128,       //
 
-  String,           //
-  Rune,             //
-  Byte,             //
+  string,           //
+  rune,             //
+  byte,             //
 
-  Boolean,          //
+  boolean,          //
 
-  Pointer,          //
-  Struct,           //
-  Func,             //
-  Array,            //
-  Slice,            //
-  Map,              //
-  Channel,          //
-  Interface         //
+  pointer,          //
+  struct,           //
+  func,             //
+  array,            //
+  slice,            //
+  map,              //
+  channel,          //
+  interface         //
 }
 
 // --- Flags ---
-enum NodeFlag : uint32 {
-  None = 0,             // NOTE - Reserved
-  NodeIndexed = 1,      // NOTE - Reserved
-  NodeBinary = 2,       // NOTE - Reserved
-  NodeUnary = 4,        // NOTE - Reserved
-
-  PlaceHolder1 = 8,
-  PlaceHolder2 = 16,
-  PlaceHolder4 = 32,
-  PlaceHolder5 = 64,
-  PlaceHolder6 = 128,
+enum NodeFlag : uint32(bit_flags) {
+  None,             // NOTE - Reserved
+  NodeIndexed,      // NOTE - Reserved
+  NodeBinary,       // NOTE - Reserved
+  NodeUnary,        // NOTE - Reserved
 }
 
 enum ValueFlag : uint32(bit_flags) {
@@ -176,15 +170,15 @@ enum ValueFlag : uint32(bit_flags) {
   DefaultBody,
 }
 
-table StructField {
+struct StructField {
   name: uint32;         // String address
   type: uint32;         // TypeDef address
   misc: uint32;         // String address
 }
 
-table GoType {
+table Type {
   // Pointer
-  elem: uint32(testing);         // TypeDef address
+  elem: uint32;         // TypeDef address
 
   // Interface
   methods: [uint64];    // Array of TypeDef & String addresses
@@ -204,8 +198,33 @@ table GoType {
   value: uint32;        // TypeDef address
 
   // Channel
-  dir: uint32;
+  dir: bool;
 
   // Array
-  size: ulong;          // For multi dimensional arrays, integer is split
+  size: uint64;          // For multi dimensional arrays, integer is split
 }
+
+table TypeDef {
+  base: uint;           // Kind enum or pointer address of type
+  id: uint;
+  type: Type;
+  flags: uint;
+}
+
+table TypeEntry {
+  key: uint(key);
+  value: TypeDef;
+}
+
+table App {
+  nodes: [program.Node];           // Flat array of all nodes
+  lut: [program.StringEntry];      // String lookup table
+  types: [TypeEntry];              // Type registry
+  name: string;
+  schver: string;                  // Schema version
+  wailsver: string;                // Version of wails
+  version: string;                 // Version of the program
+  flags: program.Flag;             // Program flags
+}
+
+root_type App;

@@ -1,46 +1,35 @@
-include "golang.fbs";
-
 namespace program;
 
-union Type {
-  golang.GoType
-}
+attribute nodeId;
 
-table TypeDef {
-  base: uint;           // Kind enum or pointer address of type
-  id: uint;
-  type: Type;
-  flags: uint;
-}
-
-enum ProgramFlag: uint {
-    // When a program buffer reaches it maximum size, it gets split into segments.
-    // Each bit flag represents the order of the current buffer.
-    // Therefore, there can be only be up to four segments.
-    FirstSegment = 0,
-    SecondSegment = 1,
-    ThirdSegment = 2,
-    ForthSegment = 4,
+enum Flag: uint(bit_flags) {
+  // When a program buffer reaches it maximum size, it gets split into segments.
+  // Each bit flag represents the order of the current buffer.
+  // Therefore, there can be only be up to four segments.
+  FirstSegment,
+  SecondSegment,
+  ThirdSegment,
+  ForthSegment,
 }
 
 // --- Flags ---
-enum Flag: uint {
-  None = 0,             // NOTE - Reserved
-  NodeIndexed = 1,      // NOTE - Reserved
-  NodeBinary = 2,       // NOTE - Reserved
-  NodeUnary = 4,        // NOTE - Reserved
+enum NodeFlag: uint(bit_flags) {
+  None,             // NOTE - Reserved
+  NodeIndexed,      // NOTE - Reserved
+  NodeBinary,       // NOTE - Reserved
+  NodeUnary,        // NOTE - Reserved
 }
 
-enum ValueFlag: uint {
-  None = 0,             // NOTE - Reserved
-  Pointer = 1,          // NOTE - Reserved
+enum ValueFlag: uint(bit_flags) {
+  None,             // NOTE - Reserved
+  Pointer,          // NOTE - Reserved
 }
 
 // --- Nodes ---
-table NodeValue {
-  type: uint;
-  value: long;         // Look up for value
-  flags: uint;
+struct NodeValue {
+  type: uint32;                  // TypeDef lookup
+  value: uint64(nodeId);         // Look up for value
+  flags: NodeFlag;
 }
 
 union NodeUnion {
@@ -50,7 +39,7 @@ union NodeUnion {
 }
 
 table IndexedNode {
-  id: uint;
+  id: uint32;
   fields: [NodeValue];
 }
 
@@ -60,14 +49,14 @@ table BinaryNode {
 }
 
 table UnaryNode {
-  value:NodeValue;     // Any flags stored outside of the node content
+  value:NodeValue;      // Any flags stored outside of the node content
 }
 
 table Node {
-  id: long;             // unique node id
+  id: uint64(nodeId);             // unique node id
   opcode: uint;         // opcode of node
-  parent: long;         // parent node id
-  next: long;           // next sibling id
+  parent: uint64(nodeId);         // parent node id
+  next: uint64(nodeId);           // next sibling id
   flags: uint;          // contains the node type and miscellanous flags
   node: NodeUnion;      // actual node contents
 }
@@ -76,21 +65,3 @@ table StringEntry {
   key: uint(key);
   value: string;
 }
-
-table TypeEntry {
-  key: uint(key);
-  value: TypeDef;
-}
-
-table App {
-  nodes: [Node];           // Flat array of all nodes
-  lut: [StringEntry];      // String lookup table
-  types: [TypeEntry];      // Type registry
-  name: string;
-  schver: string;          // Schema version
-  wailsver: string;        // Version of wails
-  version: string;         // Version of the program
-  flags: ProgramFlag;      // Program flags
-}
-
-root_type App;
