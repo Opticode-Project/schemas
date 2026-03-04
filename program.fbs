@@ -12,24 +12,11 @@ enum Flag: uint(bit_flags) {
   ForthSegment,
 }
 
-// --- Flags ---
-enum NodeFlag: uint(bit_flags) {
-  None,             // NOTE - Reserved
-  NodeIndexed,      // NOTE - Reserved
-  NodeBinary,       // NOTE - Reserved
-  NodeUnary,        // NOTE - Reserved
-}
-
-enum ValueFlag: uint(bit_flags) {
-  None,             // NOTE - Reserved
-  Pointer,          // NOTE - Reserved
-}
-
 // --- Nodes ---
 struct NodeValue {
   type: uint32;                  // TypeDef lookup
   value: uint64(nodeId);         // Look up for value
-  flags: ValueFlag;
+  flags: uint32;
 }
 
 union NodeUnion {
