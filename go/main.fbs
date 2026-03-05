@@ -205,14 +205,14 @@ table Type {
 }
 
 table TypeDef {
-  base: uint;           // Kind enum or pointer address of type
-  id: uint;
+  base: uint32;           // Kind enum or pointer address of type
+  id: uint32;
   type: Type;
-  flags: uint;
+  flags: uint32;
 }
 
 table TypeEntry {
-  key: uint(key);
+  key: uint32(key);
   value: TypeDef;
 }
 

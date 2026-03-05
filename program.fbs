@@ -1,8 +1,10 @@
+include "go/main.fbs";
+
 namespace program;
 
 attribute nodeId;
 
-enum Flag: uint(bit_flags) {
+enum Flag: uint32(bit_flags) {
   // When a program buffer reaches it maximum size, it gets split into segments.
   // Each bit flag represents the order of the current buffer.
   // Therefore, there can be only be up to four segments.
@@ -14,9 +16,9 @@ enum Flag: uint(bit_flags) {
 
 // --- Nodes ---
 struct NodeValue {
-  type: uint32;                  // TypeDef lookup
-  value: uint64(nodeId);         // Look up for value
-  flags: uint32;
+  value: uint64(nodeId);         // Node Address
+  type: uint32;                  // TypeDef Address
+  flags: uint32;                 // ValueFlag
 }
 
 union NodeUnion {
@@ -41,14 +43,14 @@ table UnaryNode {
 
 table Node {
   id: uint64(nodeId);             // unique node id
-  opcode: uint;         // opcode of node
+  opcode: uint32;         // opcode of node
   parent: uint64(nodeId);         // parent node id
   next: uint64(nodeId);           // next sibling id
-  flags: uint;          // contains the node type and miscellanous flags
+  flags: uint32;          // contains the node type and miscellanous flags
   node: NodeUnion;      // actual node contents
 }
 
 table StringEntry {
-  key: uint(key);
+  key: uint32(key);
   value: string;
 }
