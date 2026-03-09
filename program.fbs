@@ -1,165 +1,24 @@
+include "go/main.fbs";
+
 namespace program;
 
-union Type {
-  PointerType,
-  StructureType,
-  FunctionType,
-  MapType,
-  ArrayType,
-  TupleType
-}
+attribute nodeId;
 
-table Pair {
-  key: uint;
-  value: uint;
-}
-
-table StructureField {
-  name: uint;                //
-  type: uint;                //
-  misc: uint;                //
-}
-
-table PointerType {
-  elem: uint;                //
-}
-
-table TupleType {
-  elem: [uint];              //
-}
-
-// This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string:
-// TS (interface/class/enum?)
-// Go (struct/interface)
-// C (struct/enum/union)
-// C++ (struct/class/union/enum?)
-// C# (struct/class/record/interface/enum?)
-// Lua (table)
-// Pascal (record/set/array/enum?)
-// PHP (class)
-// Dart (class)
-// GLSL (struct)
-// Haskell (data)
-// Kotlin (class)
-// MATLAB (struct)
-// MOJO (struct)
-// SQL (table)
-// Zig (struct)
-// Python (class)
-// Rust (struct)
-table StructureType {
-  fields: [StructureField];
-  defs: [uint];          // Array of Type Definitions
-}
-
-// This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string:
-// Go (func)
-// TS (function)
-// C (function)
-// C++ (function)
-// C# (function/delegate)
-// Lua (function)
-// Pascal
-// PHP
-// Dart
-// GLSL
-// Haskell
-// Kotlin
-// MATLAB
-// MOJO
-// SQL
-// Zig
-// Python
-// Rust
-table FunctionType {
-  params: [Pair];
-  results: [Pair];
-  impl: Pair;
-  type_sig: uint;
-}
-
-// This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string
-// Go (map)
-// TS (Map)
-// C (No native map type)
-// C++ (Standard library)
-// C# (Dictionary)
-// Lua (table)
-// Pascal (No native map type)
-// PHP
-// Dart
-// GLSL
-// Haskell
-// Kotlin
-// MATLAB
-// MOJO (Dict)
-// SQL
-// Zig
-// Python
-// Rust
-table MapType {
-  key: uint;            // Type Definition
-  value: uint;          // Type Definition
-}
-
-// This will work in the following language models with proper flags, int spliting, and taking advantage of integers as a pointer to a string
-// Go (array/slice)
-// TS (array)
-// C (array)
-// C++ (Heavy on flags)
-// C# (Heavy on flags)
-// Lua (table)
-// Pascal (maybe not indexed arrays)
-// PHP (maybe)
-// Dart
-// GLSL
-// Haskell (needs pointers for desugars to a linked list)
-// Kotlin
-// MATLAB (maybe)
-// SQL
-// Zig
-// Python
-// Rust
-table ArrayType {
-  elem: uint;           // Type Definition
-  size: ulong;          // For multi dimensional arrays, integer is split
-}
-
-table TypeDef {
-  base: uint;           // Kind enum or pointer address of type
-  id: uint;
-  type: Type;
-  flags: uint;
-}
-
-enum ProgramFlag: uint {
-    // When a program buffer reaches it maximum size, it gets split into segments.
-    // Each bit flag represents the order of the current buffer.
-    // Therefore, there can be only be up to four segments.
-    FirstSegment = 0,
-    SecondSegment = 1,
-    ThirdSegment = 2,
-    ForthSegment = 4,
-}
-
-// --- Flags ---
-enum Flag: uint {
-  None = 0,             // NOTE - Reserved
-  NodeIndexed = 1,      // NOTE - Reserved
-  NodeBinary = 2,       // NOTE - Reserved
-  NodeUnary = 4,        // NOTE - Reserved
-}
-
-enum ValueFlag: uint {
-  None = 0,             // NOTE - Reserved
-  Pointer = 1,          // NOTE - Reserved
+enum Flag: uint32(bit_flags) {
+  // When a program buffer reaches it maximum size, it gets split into segments.
+  // Each bit flag represents the order of the current buffer.
+  // Therefore, there can be only be up to four segments.
+  FirstSegment,
+  SecondSegment,
+  ThirdSegment,
+  ForthSegment,
 }
 
 // --- Nodes ---
-table NodeValue {
-  type: uint;
-  value: long;         // Look up for value
-  flags: uint;
+struct NodeValue {
+  value: uint64(nodeId);         // Node Address
+  type: uint32;                  // TypeDef Address
+  flags: uint32;                 // ValueFlag
 }
 
 union NodeUnion {
@@ -169,7 +28,7 @@ union NodeUnion {
 }
 
 table IndexedNode {
-  id: uint;
+  id: uint32;
   fields: [NodeValue];
 }
 
@@ -179,37 +38,19 @@ table BinaryNode {
 }
 
 table UnaryNode {
-  value:NodeValue;     // Any flags stored outside of the node content
+  value:NodeValue;      // Any flags stored outside of the node content
 }
 
 table Node {
-  id: long;             // unique node id
-  opcode: uint;         // opcode of node
-  parent: long;         // parent node id
-  next: long;           // next sibling id
-  flags: uint;          // contains the node type and miscellanous flags
+  id: uint64(nodeId);             // unique node id
+  opcode: uint32;         // opcode of node
+  parent: uint64(nodeId);         // parent node id
+  next: uint64(nodeId);           // next sibling id
+  flags: uint32;          // contains the node type and miscellanous flags
   node: NodeUnion;      // actual node contents
 }
 
 table StringEntry {
-  key: uint(key);
+  key: uint32(key);
   value: string;
 }
-
-table TypeEntry {
-  key: uint(key);
-  value: TypeDef;
-}
-
-table App {
-  nodes: [Node];           // Flat array of all nodes
-  lut: [StringEntry];      // String lookup table
-  types: [TypeEntry];      // Type registry
-  name: string;
-  schver: string;          // Schema version
-  wailsver: string;        // Version of wails
-  version: string;         // Version of the program
-  flags: ProgramFlag;      // Program flags
-}
-
-root_type App;
