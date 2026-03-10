@@ -1,0 +1,13 @@
+namespace net;
+
+enum ID:uint16 {
+  Verification,
+  RVerification,
+}
+
+table Packet {
+  id: ID;
+  flags: uint16;
+  length: uint32;
+  payload: [byte];
+}
