@@ -1,4 +1,4 @@
-namespace net;
+namespace network;
 
 enum ID:uint16 {
   Verification,
