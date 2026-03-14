@@ -8,6 +8,5 @@ enum ID:uint16 {
 table Packet {
   id: ID;
   flags: uint16;
-  length: uint32;
   payload: [byte];
 }
