@@ -40,12 +40,12 @@ table UnaryNode {
 }
 
 table Node {
-  id: uint64(nodeId);             // unique node id
+  id: uint64(nodeId);     // unique node id
   opcode: uint32;         // opcode of node
-  parent: uint64(nodeId);         // parent node id
-  next: uint64(nodeId);           // next sibling id
+  parent: uint64(nodeId); // parent node id
+  next: uint64(nodeId);   // next sibling id
   flags: uint32;          // contains the node type and miscellanous flags
-  node: NodeUnion;      // actual node contents
+  node: NodeUnion;        // actual node contents
 }
 
 table StringEntry {

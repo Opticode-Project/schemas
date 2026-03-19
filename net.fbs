@@ -3,6 +3,12 @@ namespace network;
 enum ID:uint16 {
   Verification,
   RVerification,
+
+  SetNode,
+  DeleteNode,
+  ConnectNodes,
+  UpdateNodeField,
+  Export
 }
 
 table Packet {
