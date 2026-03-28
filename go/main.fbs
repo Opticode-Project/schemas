@@ -66,6 +66,7 @@ enum Opcode : uint32 {
   // --- Pointers & References ---
   AddrOf,             // &var | UnaryNode
   Deref,              // *ptr | UnaryNode
+  Reference,          // <identifier> | UnaryNode
 
   // --- Functions & Calls ---
   Call,               // func(...) | IndexedNode
